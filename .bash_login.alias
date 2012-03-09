@@ -1,0 +1,12 @@
+alias c='clear'
+
+alias l='ls -bF'
+alias ll='ls -lbF'
+alias lla='ls -albF'
+alias la='ls -abF'
+
+alias ..='cd ..'
+alias ::='cd ../..'
+alias :::='cd ../../..'
+alias ::::='cd ../../../..'
+alias :::::='cd ../../../../..'

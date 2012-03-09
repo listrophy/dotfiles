@@ -1,0 +1,42 @@
+RED="\[\e[0;31m\]"
+GREEN="\[\e[0;32m\]"
+YELLOW="\[\e[0;33m\]"
+LIGHT_BLUE="\[\e[1;34m\]"
+COLOR_NONE="\[\e[0m\]"
+LIGHT_GRAY="\[\e[0;37m\]"
+
+function parse_git_deleted {
+  [[ $(git status 2> /dev/null | grep 'deleted:') != "" ]] && echo "-"
+}
+function parse_git_added {
+  [[ $(git status 2> /dev/null | grep "Untracked files:") != "" ]] && echo '+'
+}
+function parse_git_modified {
+  [[ $(git status 2> /dev/null | grep 'modified:') != "" ]] && echo "*"
+}
+function parse_git_dirty {
+  echo "$(parse_git_added)$(parse_git_modified)$(parse_git_deleted)"
+}
+function parse_git_branch {
+  git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/"
+}
+function prompt_dir {
+  if [[ $(git status 2>&1 | grep 'Not a git repository') != "" ]]
+  then
+    echo "\w"
+  else
+    local my_pwd=`pwd`
+    echo ${LIGHT_BLUE}${my_pwd#$(dirname $(git rev-parse --show-toplevel))/}${COLOR_NONE}
+  fi
+}
+function prompt_func {
+  previous_return_value=$?
+  prompt="${LIGHT_GRAY}$(prompt_dir)${YELLOW}$(parse_git_branch)${COLOR_NONE} "
+  if test $previous_return_value -eq 0
+  then
+    PS1="${GREEN}\h ${COLOR_NONE}${prompt}"
+  else
+    PS1="${RED}\h ${COLOR_NONE}${prompt}"
+  fi
+}
+PROMPT_COMMAND=prompt_func
