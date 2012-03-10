@@ -22,8 +22,22 @@ function parse_git_modified {
 }
 
 # $1 = git status 2>&1
+function parse_git_push_pull_status {
+  if [[ $(echo "$1" | grep 'Your branch is ahead of') != "" ]]
+  then
+    echo "↑"
+  elif [[ $(echo "$1" | grep 'Your branch is behind') != "" ]]
+  then
+    echo "↓"
+  elif [[ $(echo "$1" | grep 'Your branch and .* have diverged') != "" ]]
+  then
+    echo "↕"
+  fi
+}
+
+# $1 = git status 2>&1
 function parse_git_dirty {
-  echo "$(parse_git_added "$1")$(parse_git_modified "$1")$(parse_git_deleted "$1")"
+  echo "$(parse_git_added "$1")$(parse_git_modified "$1")$(parse_git_deleted "$1")$(parse_git_push_pull_status "$1")"
 }
 
 # $1 = git status 2>&1
