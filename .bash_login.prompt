@@ -1,42 +1,56 @@
 RED="\[\e[0;31m\]"
 GREEN="\[\e[0;32m\]"
 YELLOW="\[\e[0;33m\]"
+PURPLE="\[\e[0;35m\]"
 LIGHT_BLUE="\[\e[1;34m\]"
 COLOR_NONE="\[\e[0m\]"
 LIGHT_GRAY="\[\e[0;37m\]"
 
+# $1 = git status 2>&1
 function parse_git_deleted {
-  [[ $(git status 2> /dev/null | grep 'deleted:') != "" ]] && echo "-"
+  [[ $(echo "$1" | grep 'deleted:') != "" ]] && echo "-"
 }
+
+# $1 = git status 2>&1
 function parse_git_added {
-  [[ $(git status 2> /dev/null | grep "Untracked files:") != "" ]] && echo '+'
+  [[ $(echo "$1" | grep "Untracked files:") != "" ]] && echo '+'
 }
+
+# $1 = git status 2>&1
 function parse_git_modified {
-  [[ $(git status 2> /dev/null | grep 'modified:') != "" ]] && echo "*"
+  [[ $(echo "$1" | grep 'modified:') != "" ]] && echo "*"
 }
+
+# $1 = git status 2>&1
 function parse_git_dirty {
-  echo "$(parse_git_added)$(parse_git_modified)$(parse_git_deleted)"
+  echo "$(parse_git_added "$1")$(parse_git_modified "$1")$(parse_git_deleted "$1")"
 }
+
+# $1 = git status 2>&1
 function parse_git_branch {
-  git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty))/"
+  git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty "$1"))/"
 }
+
+# $1 = git status 2>&1
 function prompt_dir {
-  if [[ $(git status 2>&1 | grep 'Not a git repository') != "" ]]
+  if [[ $(echo "$1" | grep 'Not a git repository') != "" ]]
   then
-    echo "\w"
+    echo "${PURPLE}\w${COLOR_NONE}"
   else
     local my_pwd=`pwd`
     echo ${LIGHT_BLUE}${my_pwd#$(dirname $(git rev-parse --show-toplevel))/}${COLOR_NONE}
   fi
 }
+
 function prompt_func {
   previous_return_value=$?
-  prompt="${LIGHT_GRAY}$(prompt_dir)${YELLOW}$(parse_git_branch)${COLOR_NONE} "
+  git_status=$(git status 2>&1)
+  prompt="${LIGHT_GRAY}$(prompt_dir "$git_status")${YELLOW}$(parse_git_branch "$git_status")${COLOR_NONE} "
   if test $previous_return_value -eq 0
   then
-    PS1="${GREEN}\h ${COLOR_NONE}${prompt}"
+    PS1="${GREEN}\h ${prompt}"
   else
-    PS1="${RED}\h ${COLOR_NONE}${prompt}"
+    PS1="${RED}\h ${prompt}"
   fi
 }
 PROMPT_COMMAND=prompt_func
