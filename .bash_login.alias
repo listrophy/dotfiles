@@ -13,6 +13,7 @@ alias :::::='cd ../../../../..'
 
 alias gap='git add -p'
 alias gc='git commit'
+alias gd='git diff -a -w'
 alias gl='git pull'
 alias gp='git push'
 alias gst='git status'
