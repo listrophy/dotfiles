@@ -1,8 +1,10 @@
-source ~/.bash_login.prompt
-source ~/.bash_login.alias
-source ~/.bash_login.path
-source ~/.bash_login.dircolors
-source ~/.bash_login.completion
+pushd "${HOME}/dev/listrophy/dotfiles" 1> /dev/null
+ source .bash_login.prompt
+ source .bash_login.alias
+ source .bash_login.path
+ source .bash_login.dircolors
+ source .bash_login.completion
+popd 1> /dev/null
 
 source ~/.bash_login.local
 
