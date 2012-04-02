@@ -42,6 +42,8 @@ command! -bar -range=% Trim :<line1>,<line2>s/\s\+$//e
 " find current file in NERDTree
 map <silent> <C-s> :NERDTree<CR>:wincmd l<CR>:NERDTreeFind<CR>
 
+let NERDTreeIgnore=['instrumentscli\d\+\.trace', '\~$']
+
 " clear search
 nmap <silent> ,/ :nohlsearch<CR>
 
