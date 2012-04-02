@@ -11,6 +11,10 @@ alias :::='cd ../../..'
 alias ::::='cd ../../../..'
 alias :::::='cd ../../../../..'
 
+alias psack='ps aux | ack'
+alias pgup='pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start'
+alias pgdown='pg_ctl -D /usr/local/var/postgres stop -s -m fast'
+
 alias gap='git add -p'
 alias gc='git commit'
 alias gd='git diff -a -w'
@@ -18,3 +22,5 @@ alias gl='git pull'
 alias gp='git push'
 alias gst='git status'
 alias viuntracked='vi $(git ls-files -o -X .gitignore)'
+
+alias be='bundle exec'
