@@ -42,7 +42,12 @@ function parse_git_dirty {
 
 # $1 = git status 2>&1
 function parse_git_branch {
-  git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse_git_dirty "$1"))/"
+  branch=$(git br --no-color 2> /dev/null | sed -n '/^\*/p' | sed -e "s/^\* \(.*\)/\1/")
+  if [[ $branch != "" ]]
+  then
+    # 原 approximately means "original", hence master
+    echo "($(echo $branch | sed -e "s/^master$/原/")$(parse_git_dirty "$1"))"
+  fi
 }
 
 # $1 = git status 2>&1
@@ -56,10 +61,17 @@ function prompt_dir {
   fi
 }
 
+function show_dirs_stack {
+  if [[ $(dirs -p | wc -l | awk '{print $1}') != "1" ]]
+  then
+    echo "䷀ "
+  fi
+}
+
 function prompt_func {
   previous_return_value=$?
   git_status=$(git status 2>&1)
-  prompt="${LIGHT_GRAY}$(prompt_dir "$git_status")${YELLOW}$(parse_git_branch "$git_status")${COLOR_NONE} "
+  prompt="${LIGHT_GRAY}$(show_dirs_stack)$(prompt_dir "$git_status")${YELLOW}$(parse_git_branch "$git_status")${COLOR_NONE} "
   if test $previous_return_value -eq 0
   then
     PS1="${GREEN}\h ${prompt}"

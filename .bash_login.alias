@@ -1,9 +1,10 @@
-alias c='clear'
+alias c=clear
 
 alias l='ls -bF'
 alias ll='ls -lbF'
 alias lla='ls -albF'
 alias la='ls -abF'
+alias lsd='ls -dbF'
 
 alias ..='cd ..'
 alias ::='cd ../..'
@@ -21,6 +22,21 @@ alias gd='git diff -a -w'
 alias gl='git pull'
 alias gp='git push'
 alias gst='git status'
+alias glog='git log --oneline --decorate --graph'
 alias viuntracked='vi $(git ls-files -o -X .gitignore)'
 
 alias be='bundle exec'
+alias v.='mvim .'
+
+alias ducks='du -cms * | sort -rn | head'
+alias ltunnel='sudo ssh -L 80:localhost:3000 brad@localhost'
+alias gwen='ssh brad@gwen'
+
+function take() {
+  mkdir -p $1
+  cd $1
+}
+
+function travis() {
+  curl http://travis-ci.org/${1}.json | jsonpp | less
+}
