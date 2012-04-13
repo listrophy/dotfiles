@@ -6,27 +6,27 @@ LIGHT_BLUE="\[\e[1;34m\]"
 COLOR_NONE="\[\e[0m\]"
 LIGHT_GRAY="\[\e[0;37m\]"
 
-# $1 = git status --porcelain 2>&1
+# $1 = git status --short --branch 2>&1
 function parse_git_deleted {
   [[ $(echo "$1" | grep "^.D") != "" ]] && echo "-"
 }
 
-# $1 = git status --porcelain 2>&1
+# $1 = git status --short --branch 2>&1
 function parse_git_added {
   [[ $(echo "$1" | grep "^??") != "" ]] && echo '+'
 }
 
-# $1 = git status --porcelain 2>&1
+# $1 = git status --short --branch 2>&1
 function parse_git_modified {
   [[ $(echo "$1" | grep "^.M") != "" ]] && echo "*"
 }
 
-# $1 = git status --porcelain 2>&1
+# $1 = git status --short --branch 2>&1
 function parse_git_staged {
   [[ $(echo "$1" | grep '^[MARCD]') != "" ]] && echo "~"
 }
 
-# $1 = git status --porcelain 2>&1
+# $1 = git status --short --branch 2>&1
 function parse_git_push_pull_status {
   if [[ $(echo "$1" | grep "^## .*\[ahead.*behind") != "" ]]
   then
@@ -40,12 +40,12 @@ function parse_git_push_pull_status {
   fi
 }
 
-# $1 = git status --porcelain 2>&1
+# $1 = git status --short --branch 2>&1
 function parse_git_dirty {
   echo "$(parse_git_staged "$1")$(parse_git_added "$1")$(parse_git_modified "$1")$(parse_git_deleted "$1")$(parse_git_push_pull_status "$1")"
 }
 
-# $1 = git status --porcelain 2>&1
+# $1 = git status --short --branch 2>&1
 function parse_git_branch {
   branch=$(git br --no-color 2> /dev/null | sed -n '/^\*/p' | sed -e "s/^\* \(.*\)/\1/")
   if [[ $branch != "" ]]
@@ -75,7 +75,7 @@ function show_dirs_stack {
 
 function prompt_func {
   previous_return_value=$?
-  git_status=$(git status --porcelain 2>&1)
+  git_status=$(git status --short --branch 2>&1)
   prompt="${LIGHT_GRAY}$(show_dirs_stack)$(prompt_dir "$git_status")${YELLOW}$(parse_git_branch "$git_status")${COLOR_NONE} "
   if test $previous_return_value -eq 0
   then
