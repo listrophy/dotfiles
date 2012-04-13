@@ -67,21 +67,30 @@ function prompt_dir {
 }
 
 function show_dirs_stack {
-  if [[ $(dirs -p | wc -l | awk '{print $1}') != "1" ]]
+  n_dirs=$(dirs -p | wc -l | awk '{print $1}')
+  if [[ $n_dirs == "1" ]]
   then
-    echo "䷀ "
+    true
+  elif [[ $n_dirs == "2" ]]
+  then
+    echo "="
+  elif [[ $n_dirs == "3" ]]
+  then
+    echo "☰"
+  else
+    echo "䷀"
   fi
 }
 
 function prompt_func {
   previous_return_value=$?
   git_status=$(git status --short --branch 2>&1)
-  prompt="${LIGHT_GRAY}$(show_dirs_stack)$(prompt_dir "$git_status")${YELLOW}$(parse_git_branch "$git_status")${COLOR_NONE} "
+  prompt="${LIGHT_GRAY}$(show_dirs_stack) $(prompt_dir "$git_status")${YELLOW}$(parse_git_branch "$git_status")${COLOR_NONE} "
   if test $previous_return_value -eq 0
   then
-    PS1="${GREEN}\h ${prompt}"
+    PS1="${GREEN}\h${prompt}"
   else
-    PS1="${RED}\h ${prompt}"
+    PS1="${RED}\h${prompt}"
   fi
 }
 PROMPT_COMMAND=prompt_func
