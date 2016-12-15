@@ -1,6 +1,6 @@
 syntax on
 filetype plugin indent on
-colorscheme vividchalk
+" colorscheme vividchalk
 
 set autoindent
 set background=dark
@@ -12,7 +12,8 @@ set guifont=Inconsolata:h16
 set guioptions-=T guioptions-=e guioptions-=L guioptions-=r
 set hlsearch
 set ignorecase
-set listchars=tab:⇀\ ,trail:␠
+exec "set listchars=tab:\uBB\uBB,trail:\uB7,nbsp:~"
+set list
 set matchpairs+=<:>
 set modeline
 set modelines=5
@@ -33,8 +34,15 @@ au! BufRead,BufNewFile *.rb
 au! BufRead,BufNewFile *.xml
 au  BufRead,BufNewFile *.scss set filetype=sass
 
+" Markdown
+au  BufRead,BufNewFile *.md,README set filetype=markdown
+
 " CocoaPods
 au  BufRead,BufNewFile Podfile,*podspec set filetype=ruby
+
+" Ember
+au  BufRead,BufNewFile *em set filetype=coffee
+au  BufRead,BufNewFile *emblem set filetype=slim
 
 " Fix trailing whitespace
 command! -bar -range=% Trim :<line1>,<line2>s/\s\+$//e
@@ -75,3 +83,47 @@ map <silent> <D-8> :tabn 8<CR>
 map <silent> <D-9> :tabn 9<CR>
 
 map Y y$
+
+" Markdown
+let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_frontmatter = 1
+let g:vim_markdown_new_list_item_indent = 2
+
+" FROM Instantly Better Vim
+
+" ======[ Make the 121st column stand out ]====================
+highlight ColorColumn ctermbg=magenta
+call matchadd('ColorColumn', '\%121v', 100)
+
+" Die Blinkenmatchen
+" 'Take me to the next match'
+nnoremap <silent> n  n:call HLNext(0.3)<cr>
+nnoremap <silent> N  N:call HLNext(0.3)<cr>
+
+"=====[ Blink a red ring around the match ]=============
+function! HLNext (blinktime)
+  highlight RedOnRed ctermfg=red ctermbg=red
+  let [bufnum, lnum, col, off] = getpos('.')
+  let matchlen = strlen(matchstr(strpart(getline('.'),col-1),@/))
+  echo matchlen
+  let ring_pat = (lnum > 1 ? '\%'.(lnum-1).'l\%>'
+      \ . max([col-4,1]) .'v\%<'.(col+matchlen+3).'v.\|' : '')
+      \ . '\%'.lnum.'l\%>'.max([col-4,1]) .'v\%<'.col.'v.'
+      \ . '\|'
+      \ . '\%'.lnum.'l\%>'.max([col+matchlen-1,1])
+      \ . 'v\%<'.(col+matchlen+3).'v.'
+      \ . '\|'
+      \ . '\%'.(lnum+1).'l\%>'.max([col-4,1])
+      \ . 'v\%<'.(col+matchlen+3).'v.'
+  let ring = matchadd('RedOnRed', ring_pat, 101)
+  redraw
+  exec 'sleep ' . float2nr(a:blinktime * 1000) . 'm'
+  call matchdelete(ring)
+  redraw
+endfunction
+
+command! Present call SetPresentationStyle()
+function! SetPresentationStyle()
+  colorscheme PaperColor
+  set background=light
+endfunction
