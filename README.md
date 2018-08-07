@@ -2,6 +2,6 @@
 
 Use at your own peril.
 
-## Screenshots
+## Screenshot
 
 ![basic screenshot](https://raw.github.com/listrophy/dotfiles/master/screenshots/main.png)
